@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Bill - PayFlow</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <a href="index.html" class="back">←</a>
+      <div class="logo">Create Bill</div>
+    </header>
+
+    <section class="section">
+      <div class="form-group">
+        <label>Items (comma-separated)</label>
+        <input type="text" id="items" placeholder="e.g. Rice, Dal, Sabzi" />
+      </div>
+      <div class="form-group">
+        <label>Total Amount (₹)</label>
+        <input type="number" id="total" placeholder="e.g. 450" />
+      </div>
+
+      <button class="btn-primary" onclick="createBill()">Generate Bill</button>
+
+      <div id="result" class="result-box hidden"></div>
+
+      <!-- QR placeholder -->
+      <div id="qrBox" class="qr-box hidden">
+        <p>Bill QR Code</p>
+        <img id="qrImg" src="" alt="QR Code" />
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8000';
+
+    async function createBill() {
+      const itemsRaw = document.getElementById('items').value.trim();
+      const total = parseInt(document.getElementById('total').value);
+
+      if (!itemsRaw || !total) return alert('Fill in all fields');
+
+      const items = itemsRaw.split(',').map(i => i.trim());
+      const btn = document.querySelector('.btn-primary');
+      btn.textContent = 'Creating...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API}/bill`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items, total })
+        });
+        const data = await res.json();
+
+        const box = document.getElementById('result');
+        box.className = 'result-box success';
+        box.classList.remove('hidden');
+        box.innerHTML = `✅ Bill created!<br>Bill ID: <strong>#${data.bill_id}</strong>`;
+
+        if (data.qr) {
+          document.getElementById('qrBox').classList.remove('hidden');
+          document.getElementById('qrImg').src = `data:image/png;base64,${data.qr}`;
+        }
+      } catch (e) {
+        const box = document.getElementById('result');
+        box.className = 'result-box error';
+        box.classList.remove('hidden');
+        box.textContent = '❌ Could not connect to server.';
+      } finally {
+        btn.textContent = 'Generate Bill';
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
