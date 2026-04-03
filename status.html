@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bill Status - PayFlow</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <a href="index.html" class="back">←</a>
+      <div class="logo">Bill Status</div>
+    </header>
+
+    <section class="section">
+      <div class="form-group">
+        <label>Enter Bill ID</label>
+        <input type="number" id="billId" placeholder="e.g. 3" />
+      </div>
+
+      <button class="btn-primary" onclick="checkStatus()">Check Status</button>
+
+      <div id="result" class="result-box hidden"></div>
+    </section>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8000';
+
+    async function checkStatus() {
+      const id = document.getElementById('billId').value.trim();
+      if (!id) return alert('Enter a Bill ID');
+
+      const btn = document.querySelector('.btn-primary');
+      btn.textContent = 'Checking...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API}/status/${id}`);
+        const data = await res.json();
+
+        const box = document.getElementById('result');
+        box.classList.remove('hidden');
+
+        const statusMap = {
+          pending:  { icon: '🕐', cls: 'warning', label: 'Pending' },
+          paid:     { icon: '✅', cls: 'success', label: 'Paid' },
+          matched:  { icon: '✅', cls: 'success', label: 'Matched & Paid' },
+        };
+        const s = statusMap[data.status] || { icon: '❓', cls: 'warning', label: data.status };
+        box.className = `result-box ${s.cls}`;
+        box.innerHTML = `${s.icon} Bill <strong>#${id}</strong> is <strong>${s.label}</strong>`;
+      } catch (e) {
+        const box = document.getElementById('result');
+        box.className = 'result-box error';
+        box.classList.remove('hidden');
+        box.textContent = '❌ Bill not found or server error.';
+      } finally {
+        btn.textContent = 'Check Status';
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
