@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PayFlow</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header>
+      <div class="logo">Pay<span>Flow</span></div>
+      <div class="balance-pill">₹ 12,450.00</div>
+    </header>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <a href="pay.html" class="action-card">
+        <div class="icon">↑</div>
+        <span>Pay</span>
+      </a>
+      <a href="bill.html" class="action-card">
+        <div class="icon">📋</div>
+        <span>Bill</span>
+      </a>
+      <a href="status.html" class="action-card">
+        <div class="icon">🔍</div>
+        <span>Status</span>
+      </a>
+      <a href="voice.html" class="action-card">
+        <div class="icon">🎤</div>
+        <span>Voice</span>
+      </a>
+    </section>
+
+    <!-- Recent Transactions -->
+    <section class="section">
+      <h2>Recent Transactions</h2>
+      <div class="txn-list" id="txnList">
+        <div class="txn-item">
+          <div class="txn-info">
+            <span class="txn-name">Swiggy</span>
+            <span class="txn-date">Today, 1:20 PM</span>
+          </div>
+          <span class="txn-amount debit">- ₹320</span>
+        </div>
+        <div class="txn-item">
+          <div class="txn-info">
+            <span class="txn-name">Salary Credit</span>
+            <span class="txn-date">Yesterday</span>
+          </div>
+          <span class="txn-amount credit">+ ₹45,000</span>
+        </div>
+        <div class="txn-item">
+          <div class="txn-info">
+            <span class="txn-name">Electricity Bill</span>
+            <span class="txn-date">2 days ago</span>
+          </div>
+          <span class="txn-amount debit">- ₹1,200</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item active">🏠<span>Home</span></a>
+    <a href="pay.html" class="nav-item">↑<span>Pay</span></a>
+    <a href="bill.html" class="nav-item">📋<span>Bills</span></a>
+    <a href="status.html" class="nav-item">📊<span>Status</span></a>
+  </nav>
+</body>
+</html>
