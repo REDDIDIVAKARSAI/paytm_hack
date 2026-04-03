@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pay - PayFlow</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <a href="index.html" class="back">←</a>
+      <div class="logo">Send Payment</div>
+    </header>
+
+    <section class="section">
+      <div class="amount-display" id="amountDisplay">₹ 0</div>
+
+      <div class="numpad">
+        <button onclick="input('1')">1</button><button onclick="input('2')">2</button><button onclick="input('3')">3</button>
+        <button onclick="input('4')">4</button><button onclick="input('5')">5</button><button onclick="input('6')">6</button>
+        <button onclick="input('7')">7</button><button onclick="input('8')">8</button><button onclick="input('9')">9</button>
+        <button onclick="input('000')">000</button><button onclick="input('0')">0</button><button onclick="del()">⌫</button>
+      </div>
+
+      <button class="btn-primary" onclick="pay()">Pay Now</button>
+
+      <div id="result" class="result-box hidden"></div>
+    </section>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8000';
+    let amount = '';
+
+    function input(v) {
+      if (amount.length >= 7) return;
+      amount += v;
+      document.getElementById('amountDisplay').textContent = '₹ ' + parseInt(amount).toLocaleString('en-IN');
+    }
+
+    function del() {
+      amount = amount.slice(0, -1);
+      document.getElementById('amountDisplay').textContent = amount ? '₹ ' + parseInt(amount).toLocaleString('en-IN') : '₹ 0';
+    }
+
+    async function pay() {
+      if (!amount || parseInt(amount) === 0) return alert('Enter an amount');
+      const btn = document.querySelector('.btn-primary');
+      btn.textContent = 'Processing...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API}/payment?amount=${parseInt(amount)}`, { method: 'POST' });
+        const data = await res.json();
+        const box = document.getElementById('result');
+        box.classList.remove('hidden');
+        if (data.status === 'matched') {
+          box.className = 'result-box success';
+          box.innerHTML = `✅ Payment matched!<br>Bill #${data.bill_id} — Score: ${data.score}`;
+        } else {
+          box.className = 'result-box warning';
+          box.innerHTML = `⚠️ Payment recorded but no bill matched.<br>Amount: ₹${parseInt(amount).toLocaleString('en-IN')}`;
+        }
+      } catch (e) {
+        const box = document.getElementById('result');
+        box.className = 'result-box error';
+        box.classList.remove('hidden');
+        box.textContent = '❌ Could not connect to server.';
+      } finally {
+        btn.textContent = 'Pay Now';
+        btn.disabled = false;
+        amount = '';
+        document.getElementById('amountDisplay').textContent = '₹ 0';
+      }
+    }
+  </script>
+</body>
+</html>
