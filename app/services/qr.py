@@ -35,9 +35,9 @@ def generate_qr(bill):
         f"&tn={items_str}"
     )
 
-    path = f"qr_{bill.id}.png"
-
+    import base64
+    from io import BytesIO
     img = qrcode.make(upi_link)
-    img.save(path)
-
-    return path
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode()
